@@ -1,0 +1,37 @@
+CHIP ALU {
+    IN
+        x[16], y[16],  // 16-bit inputs
+        zx, // zero the x input?
+        nx, // negate the x input?
+        zy, // zero the y input?
+        ny, // negate the y input?
+        f,  // compute out = x + y (if 1) or x & y (if 0)
+        no; // negate the out output?
+
+    OUT
+        out[16], // 16-bit output
+        zr, // 1 if (out == 0), 0 otherwise
+        ng; // 1 if (out < 0),  0 otherwise
+
+    PARTS:
+    Not16( in = x, out = negX );
+    Not16( in = y, out = negY );
+
+    // mux the negated versions with the negate flags to get either the negated or the regular version
+    Mux4Way16( a = x, b = false, c = negX, d = true, sel[0] = zx, sel[1] = nx, out = finalX );
+    Mux4Way16( a = y, b = false, c = negY, d = true, sel[0] = zy, sel[1] = ny, out = finalY );
+
+    // create an added and a anded version of x & y, and then mux the result based on f
+    Add16( a = finalX, b = finalY, out = xPlusY );
+    And16( a = finalX, b = finalY, out = xAndY );
+    Mux16( a = xAndY, b = xPlusY, sel = f, out = preFinal );
+
+    // negate the output? no
+    Not16( in = preFinal, out = negPreFinal );
+
+    // Finally set out
+    Mux16( a = preFinal, b = negPreFinal, sel = no, out = out, out = saveOut );
+
+    // Set zr and ng
+    SetFlags( in = saveOut, zr = zr, ng = ng );
+}
