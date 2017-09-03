@@ -17,11 +17,11 @@ CHIP ALU {
     Not16( in = x, out = negX );
     Not16( in = y, out = negY );
 
-    // mux the negated versions with the negate flags to get either the negated or the regular version
+    // 00 -> x 01 -> 0's 10 -> !x 11 -> 1's
     Mux4Way16( a = x, b = false, c = negX, d = true, sel[0] = zx, sel[1] = nx, out = finalX );
     Mux4Way16( a = y, b = false, c = negY, d = true, sel[0] = zy, sel[1] = ny, out = finalY );
 
-    // create an added and a anded version of x & y, and then mux the result based on f
+    // build add and and, MUX based on f
     Add16( a = finalX, b = finalY, out = xPlusY );
     And16( a = finalX, b = finalY, out = xAndY );
     Mux16( a = xAndY, b = xPlusY, sel = f, out = preFinal );
