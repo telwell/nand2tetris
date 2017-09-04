@@ -12,9 +12,38 @@
  */
 
 CHIP PC {
-    IN in[16],load,inc,reset;
+    IN in[16], load, inc, reset;
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+      // Get our incremented output
+      Inc16( in = loop, out = incOut );
+
+      // Shall we increase?
+      Mux16(
+        a = loop,
+        b = incOut,
+        sel = inc,
+        out = postInc
+      );
+
+      // Shall we load?
+      Mux16(
+        a = postInc,
+        b = in,
+        sel = load,
+        out = postLoad
+      );
+
+      // Shall we reset?
+      Mux16(
+        a = postLoad,
+        b = false,
+        sel = reset,
+        out = postReset
+      );
+
+      // Man, this one was pretty hard. I keep forgetting that you can loop
+      // back your output to utilize later...
+      Register( in = postReset, load = true, out = out, out = loop );
 }
