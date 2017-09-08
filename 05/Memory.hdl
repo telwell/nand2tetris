@@ -5,20 +5,20 @@
 
 /**
  * The complete address space of the Hack computer's memory,
- * including RAM and memory-mapped I/O. 
+ * including RAM and memory-mapped I/O.
  * The chip facilitates read and write operations, as follows:
  *     Read:  out(t) = Memory[address(t)](t)
  *     Write: if load(t-1) then Memory[address(t-1)](t) = in(t-1)
- * In words: the chip always outputs the value stored at the memory 
- * location specified by address. If load==1, the in value is loaded 
- * into the memory location specified by address. This value becomes 
+ * In words: the chip always outputs the value stored at the memory
+ * location specified by address. If load==1, the in value is loaded
+ * into the memory location specified by address. This value becomes
  * available through the out output from the next time step onward.
  * Address space rules:
- * Only the upper 16K+8K+1 words of the Memory chip are used. 
- * Access to address>0x6000 is invalid. Access to any address in 
- * the range 0x4000-0x5FFF results in accessing the screen memory 
- * map. Access to address 0x6000 results in accessing the keyboard 
- * memory map. The behavior in these addresses is described in the 
+ * Only the upper 16K+8K+1 words of the Memory chip are used.
+ * Access to address>0x6000 is invalid. Access to any address in
+ * the range 0x4000-0x5FFF results in accessing the screen memory
+ * map. Access to address 0x6000 results in accessing the keyboard
+ * memory map. The behavior in these addresses is described in the
  * Screen and Keyboard chip specifications given in the book.
  */
 
@@ -27,5 +27,38 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+      // Decide where to load our addresses from
+      DMux4Way(
+        in = load,
+        sel = address[13..14],
+        // RAM starts with 01 or 00
+        a = loadRAM1,
+        b = loadRAM2,
+        // SCRN starts with 10
+        c = loadSCRN,
+        // KBD starts with 11
+        d = loadKBD
+      );
+
+      // Need to combine our loadRAM outputs
+      Or( a = loadRAM1, b = loadRAM2, out = loadRAM );
+
+      // Our RAM addresses, 0(%B000000000000000) - 16383(%B011111111111111)
+      RAM16K( in = in, load = loadRAM, address = address[0..13], out = RAMOut1, out = RAMOut2 );
+
+      // Our Screen memory map, addresses 16384(%B100000000000000) - 24575(%B101111111111111)
+      Screen(in = in, load = loadSCRN, address = address[0..12] , out = SCRNOut );
+
+      // Our keyboard memory map == address 24576(%B110000000000000)
+      Keyboard( out = KBDOut );
+
+      // Finally select which M[address] we should emit. Same logic as above.
+      Mux4Way16(
+        a = RAMOut1,
+        b = RAMOut2,
+        c = SCRNOut,
+        d = KBDOut,
+        sel = address[13..14],
+        out = out
+      );
 }
