@@ -11,7 +11,6 @@ std::bitset<3> Code::dest( std::string dest_in ) {
   std::size_t m_found = dest_in.find("M");
   std::size_t d_found = dest_in.find("D");
 
-
   if ( m_found != std::string::npos ){ dest.set(0); }
   if ( d_found != std::string::npos ){ dest.set(1); }
   if ( a_found != std::string::npos ){ dest.set(2); }

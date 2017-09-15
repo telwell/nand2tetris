@@ -73,8 +73,8 @@ int main (int argc, char *argv[]) {
         string line;
         if ( p.commandType() == "A_COMMAND" ) {
           string add_str = p.symbol();
-          if ( p.isInt( add_str) ) {
-            line = bitset<16>( p.toInt( add_str) ).to_string();
+          if ( p.isInt( add_str ) ) {
+            line = bitset<16>( p.toInt( add_str ) ).to_string();
           } else {
             string found = st.find( add_str ).to_string();
             line += "0";
@@ -82,7 +82,7 @@ int main (int argc, char *argv[]) {
           }
         } else if ( p.commandType() == "C_COMMAND" ) {
           line += "111"; // C commands always start with this
-          line += c.comp( p.comp() ).to_string(); // includes a bit
+          line += c.comp( p.comp() ).to_string(); // includes A bit
           line += c.dest( p.dest() ).to_string();
           line += c.jump( p.jump() ).to_string();
         }
