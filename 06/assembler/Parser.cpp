@@ -171,6 +171,7 @@ std::string Parser::jump() {
 void Parser::next() {
   if ( ifs.is_open() ) {
     std::string line;
+    // This is fricken magical: http://en.cppreference.com/w/cpp/io/manip/ws
     ifs >> std::ws;
     std::getline ( ifs, line );
     if ( commandType() == "A_COMMAND" || commandType() == "C_COMMAND" ){
