@@ -1,4 +1,4 @@
-#Info
+# Info
 This is for the course [nand2tetris](http://nand2tetris.org) chapter 6. Making an
 assembler for the HACK machine we built in chapters 1-5.
 
@@ -13,7 +13,7 @@ By the end I grasped [pointers](http://www.cplusplus.com/doc/tutorial/pointers/)
 operators a bit more, but I didn't use them extensively throughout my code. Anyway,
 here is my working assembler!
 
-#Instructions
+# Instructions
 Easiest way to compile this is with something like:
 ```g++ -I /usr/local/ main.cpp Parser.cpp Code.cpp SymTable.cpp Assemble.cpp -o main.o```
 
